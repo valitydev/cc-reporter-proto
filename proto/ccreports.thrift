@@ -80,7 +80,7 @@ struct PaymentsQuery {
   6: optional list<string> trx_ids
   7: optional list<string> currencies
   8: optional list<string> statuses
-  9: optional PaymentsSearchFilter search
+  9: optional PaymentsSearchFilter filter
 }
 
 struct WithdrawalsQuery {
@@ -92,7 +92,7 @@ struct WithdrawalsQuery {
   6: optional list<string> trx_ids
   7: optional list<string> currencies
   8: optional list<string> statuses
-  9: optional WithdrawalsSearchFilter search
+  9: optional WithdrawalsSearchFilter filter
 }
 
 union ReportQuery {
@@ -101,9 +101,15 @@ union ReportQuery {
 }
 
 struct CreateReportRequest {
+  /**
+   * Server validates that report_type matches the selected ReportQuery branch.
+   */
   1: required ReportType report_type
   2: required FileType file_type
   3: required ReportQuery query
+  /**
+   * timezone controls CSV rendering timezone and defaults to UTC.
+   */
   4: optional string timezone
   5: optional string idempotency_key
 }
@@ -139,10 +145,9 @@ struct Report {
    */
   6: optional Timestamp started_at
   /**
-   * Snapshot fixation time for REPEATABLE READ.
    * This is the timestamp that bounds "what data version" is visible to this report.
    */
-  7: optional Timestamp data_window_fixed_at
+  7: optional Timestamp data_snapshot_fixed_at
   8: optional Timestamp finished_at
   9: required ReportStatus status
   10: optional FileMeta file
@@ -196,10 +201,6 @@ struct GeneratePresignedUrlRequest {
 
 service Reporting {
 
-  /**
-   * Server validates that report_type matches the selected ReportQuery branch.
-   * timezone controls CSV rendering timezone and defaults to UTC.
-   */
   ReportID CreateReport(1: CreateReportRequest request) throws (
     1: InvalidRequest ex1
   )
