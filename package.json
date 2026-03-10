@@ -2,7 +2,7 @@
   "name": "@vality/cc-reporter-proto",
   "version": "0.1.0",
   "scripts": {
-    "codegen": "thrift-codegen --n ccreports"
+    "codegen": "thrift-codegen -i ./proto --n ccreports"
   },
   "publishConfig": {
     "access": "public",
